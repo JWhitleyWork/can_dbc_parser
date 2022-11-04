@@ -73,7 +73,6 @@ private:
   bool isInitPassed;
 };
 
-
 static CanDbcParser::DbcSignalValueType ReadSignalValueType(CanDbcParser::LineParser parser)
 {
   CanDbcParser::DbcSignalValueType signalValueType;
@@ -135,7 +134,7 @@ static CanDbcParser::DbcMessage ReadMessage(CanDbcParser::LineParser parser)
   IdType idType = ((canId & 0x80000000u) > 0) ? CanDbcParser::EXT : CanDbcParser::STD;
   std::string name(parser.ReadCIdentifier("message name"));
   parser.SeekSeparator(':');
-  uint8_t dlc = parser.ReadUInt("size");
+  uint8_t dlc = SizeToDlc(parser.ReadUInt("size"));
   std::string sendingNode(parser.ReadCIdentifier("transmitter"));
   uint32_t id = (uint32_t)(canId & 0x3FFFFFFFu);
 
@@ -232,12 +231,12 @@ static CanDbcParser::DbcSignal ReadSignal(CanDbcParser::LineParser parser)
 
   if (CanDbcParser::MUX_SIGNAL == multiplexMode) {
     signal = new CanDbcParser::DbcSignal(
-      8, gain, offset, startBit, endianness,
+      SizeToDlc(length), gain, offset, startBit, endianness,
       length, sign, name,
       multiplexMode, muxSwitch);
   } else {
     signal = new CanDbcParser::DbcSignal(
-      8, gain, offset, startBit, endianness,
+      SizeToDlc(length), gain, offset, startBit, endianness,
       length, sign, name,
       multiplexMode);
   }

@@ -37,6 +37,7 @@
 
 namespace CanDbcParser
 {
+
 DbcMessage::DbcMessage()
 {
 }
@@ -87,9 +88,10 @@ CanFrame DbcMessage::GetFrame()
   frame.id = _id;
   frame.dlc = _dlc;
   frame.is_extended = _idType == EXT;
+  frame.is_fd_frame = _dlc > 8;
 
   uint8_t * ptr = static_cast<uint8_t *>(frame.data._M_elems);
-  memset(ptr, 0x00, 8);
+  memset(ptr, 0x00, 64);
 
   if (!AnyMultiplexedSignals()) {
     for (std::map<std::string, CanDbcParser::DbcSignal>::iterator it = _signals.begin();
@@ -134,6 +136,9 @@ CanFrame DbcMessage::GetFrame()
 
 void DbcMessage::SetFrame(CanFrame & msg)
 {
+  _id = msg.id;
+  _dlc = msg.dlc;
+
   uint8_t * ptr = static_cast<uint8_t *>(msg.data.data());
 
   if (!AnyMultiplexedSignals()) {

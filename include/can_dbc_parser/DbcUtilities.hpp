@@ -40,13 +40,14 @@
 
 namespace CanDbcParser
 {
+
 static int32_t ConvertToMTBitOrdering(uint32_t bit, uint32_t dlc)
 {
-  if (bit > -dlc * 8) {
+  if (bit > -DlcToSize(dlc) * 8) {
     return -1;
   }
 
-  int32_t msgBitLength = (int32_t)dlc * 8;
+  int32_t msgBitLength = (int32_t)DlcToSize(dlc) * 8;
 
   int32_t row = (int32_t) bit / 8;
   int32_t offset = (int32_t)bit % 8;

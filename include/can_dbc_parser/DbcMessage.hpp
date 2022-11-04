@@ -46,11 +46,10 @@ struct DbcMessageComment
 struct CanFrame
 {
   uint32_t id;
-  bool is_rtr;
   bool is_extended;
-  bool is_error;
+  bool is_fd_frame;
   uint8_t dlc;
-  std::array<uint8_t, 8> data;
+  std::array<uint8_t, 64> data;
 };
 
 enum IdType
@@ -59,17 +58,49 @@ enum IdType
   EXT = 1
 };
 
-typedef struct
+static uint8_t SizeToDlc(uint8_t size)
 {
-  uint8_t : 8;
-  uint8_t : 8;
-  uint8_t : 8;
-  uint8_t : 8;
-  uint8_t : 8;
-  uint8_t : 8;
-  uint8_t : 8;
-  uint8_t : 8;
-} EmptyData;
+  if (size < 8) {
+    return size;
+  } else if (size < 13) {
+    return 9;
+  } else if (size < 17) {
+    return 10;
+  } else if (size < 21) {
+    return 11;
+  } else if (size < 25) {
+    return 12;
+  } else if (size < 33) {
+    return 13;
+  } else if (size < 49) {
+    return 14;
+  } else {
+    return 15;
+  }
+}
+
+static uint8_t DlcToSize(uint8_t dlc)
+{
+  if (dlc < 8) {
+    return dlc;
+  } else if (dlc == 9) {
+    return 12;
+  } else if (dlc == 10) {
+    return 18;
+  } else if (dlc == 11) {
+    return 20;
+  } else if (dlc == 12) {
+    return 24;
+  } else if (dlc == 13) {
+    return 32;
+  } else if (dlc == 14) {
+    return 48;
+  } else if (dlc == 15) {
+    return 64;
+  } else {
+    return 0;
+  }
+}
 
 class DbcMessage
 {
@@ -100,7 +131,7 @@ public:
 
 private:
   std::map<std::string, CanDbcParser::DbcSignal> _signals;
-  uint8_t _data[8];
+  uint8_t _data[64];
   uint8_t _dlc;
   uint32_t _id;
   IdType _idType;
