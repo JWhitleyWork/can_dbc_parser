@@ -4,6 +4,9 @@ This is an implementation of a DBC parser which will represent messages and sign
 objects. This is nearly completely copied from https://github.com/NewEagleRaptor/raptor-dbw-ros2
 with minor modifications (different namespace and a new CanFrame struct) but de-coupled from ROS.
 
+## NOTE
+If you need a more complete (but less compact) C++ library for DBC parsing, check out https://github.com/xR3b0rn/dbcppp.
+
 ## Build / Installation Instructions
 
 From the repository folder:
